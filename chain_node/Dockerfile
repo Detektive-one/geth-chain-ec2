@@ -1,9 +1,9 @@
 FROM ethereum/client-go:v1.13.15
 
-# Create a password file 
+# Create a password file
 RUN echo "shiya123456789" > /ethereum_password.txt
 
-# Copy genesis.json 
+# Copy genesis.json
 COPY genesis.json /genesis.json
 
 # Create the data directory structure
@@ -15,11 +15,11 @@ COPY data/keystore/* /ethereum/keystore/
 # Initialize the chain
 RUN geth --datadir /ethereum init /genesis.json
 
-# Expose RPC port 
+# Expose RPC and WebSocket ports
 EXPOSE 8545
+EXPOSE 8546
 
-# Entry point to run Get
-
+# Entry point to run Geth
 ENTRYPOINT ["geth", \
     "--datadir", "/ethereum", \
     "--networkid", "1337", \
@@ -28,6 +28,11 @@ ENTRYPOINT ["geth", \
     "--http.port", "8545", \
     "--http.api", "eth,net,web3,personal,clique", \
     "--http.corsdomain", "*", \
+    "--ws", \
+    "--ws.addr", "0.0.0.0", \
+    "--ws.port", "8546", \
+    "--ws.api", "eth,net,web3,personal", \
+    "--ws.origins", "*", \
     "--unlock", "0", \
     "--password", "/ethereum_password.txt", \
     "--allow-insecure-unlock", \
